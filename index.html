@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Fioo — memória de trabalho do time</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0f1626" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Fioo" />
+</head>
+<body>
+  <!-- Tela de login -->
+  <div id="login-view" class="login-view hidden">
+    <div class="login-card">
+      <h1 class="brand">Fioo</h1>
+      <p class="tagline">Decisões, tarefas e compromissos do time — sem perder o fio.</p>
+
+      <form id="login-form">
+        <input id="login-email" type="email" placeholder="e-mail" autocomplete="email" required />
+        <input id="login-password" type="password" placeholder="senha" autocomplete="current-password" required />
+        <div class="login-actions">
+          <button type="submit" class="btn btn-primary" data-action="signin">Entrar</button>
+          <button type="button" class="btn btn-ghost" data-action="signup">Criar conta</button>
+        </div>
+      </form>
+
+      <div class="login-divider"><span>ou</span></div>
+      <button id="google-btn" class="btn btn-google">Entrar com Google</button>
+
+      <p id="login-error" class="login-error hidden"></p>
+    </div>
+  </div>
+
+  <!-- App -->
+  <div id="app-view" class="app-view hidden">
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="brand-sm">Fioo</span>
+        <nav class="nav">
+          <button class="nav-btn" data-tab="today">Meu dia</button>
+          <button class="nav-btn active" data-tab="feed">Feed</button>
+          <button class="nav-btn" data-tab="actions">Ações</button>
+        </nav>
+      </div>
+      <div class="topbar-right">
+        <span id="user-name" class="user-name"></span>
+        <button id="logout-btn" class="btn btn-ghost btn-sm">Sair</button>
+      </div>
+    </header>
+
+    <!-- Caixa de captura -->
+    <section class="capture">
+      <div class="capture-tabs">
+        <button class="capture-tab active" data-cap="decision">Registrar decisão</button>
+        <button class="capture-tab" data-cap="action">Registrar ação</button>
+        <button class="capture-tab" data-cap="idea">Ideia</button>
+      </div>
+
+      <!-- Form decisão -->
+      <form id="capture-decision" class="capture-form">
+        <textarea name="title" rows="2" placeholder="O que foi decidido? (cole aqui o trecho da reunião/conversa se quiser)" required></textarea>
+        <div class="capture-grid">
+          <input name="context" placeholder="Contexto / de onde veio (ex.: Reunião comercial 22/07)" />
+          <select name="projectId" class="project-select"></select>
+        </div>
+        <textarea name="rationale" rows="2" placeholder="Por quê? Quais alternativas foram descartadas e por quê"></textarea>
+        <div class="capture-grid">
+          <input name="participants" placeholder="Quem participou (separe por vírgula)" />
+          <input name="decidedAt" type="date" />
+        </div>
+        <div class="capture-grid">
+          <select name="status" class="status-select">
+            <option value="vigente">Vigente</option>
+            <option value="revista">Revista</option>
+            <option value="revogada">Revogada</option>
+          </select>
+          <select name="supersedesId" class="supersede-select"><option value="">Substitui alguma decisão? (opcional)</option></select>
+        </div>
+        <div class="capture-footer">
+          <button type="submit" class="btn btn-primary">Salvar decisão</button>
+        </div>
+      </form>
+
+      <!-- Form ação -->
+      <form id="capture-action" class="capture-form hidden">
+        <textarea name="title" rows="2" placeholder="O que precisa ser feito?" required></textarea>
+        <div class="capture-grid">
+          <select name="type" class="type-select">
+            <option value="tarefa">Tarefa</option>
+            <option value="pendencia">Pendência (bloqueada)</option>
+            <option value="followup">Follow-up (cobrar alguém)</option>
+            <option value="compromisso">Compromisso (prometi a alguém)</option>
+          </select>
+          <select name="projectId" class="project-select"></select>
+        </div>
+        <div class="capture-grid">
+          <input name="assignee" placeholder="Responsável / com quem (ex.: cliente X)" />
+          <input name="dueDate" type="date" />
+        </div>
+        <div class="capture-grid">
+          <select name="decisionId" class="decision-select"><option value="">Nasceu de qual decisão? (opcional)</option></select>
+          <select name="status" class="status-select">
+            <option value="aberta">Aberta</option>
+            <option value="em_andamento">Em andamento</option>
+            <option value="bloqueada">Bloqueada</option>
+            <option value="concluida">Concluída</option>
+          </select>
+        </div>
+        <div class="capture-footer">
+          <button type="submit" class="btn btn-primary">Salvar ação</button>
+        </div>
+      </form>
+
+      <!-- Form ideia -->
+      <form id="capture-idea" class="capture-form hidden">
+        <textarea name="title" rows="2" placeholder="Qual é a ideia? (uma semente que pode virar projeto)" required></textarea>
+        <textarea name="note" rows="2" placeholder="Detalhes / por que pode valer a pena (opcional)"></textarea>
+        <div class="capture-footer">
+          <button type="submit" class="btn btn-primary">Salvar ideia</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Meu dia -->
+    <main id="tab-today" class="tab-panel hidden">
+      <div class="toolbar">
+        <div class="seg">
+          <button class="seg-btn active" data-scope="mine">Meus</button>
+          <button class="seg-btn" data-scope="team">Do time</button>
+        </div>
+        <button id="notif-btn" class="btn btn-ghost btn-sm hidden">🔔 Ativar avisos</button>
+      </div>
+      <div id="today-list"></div>
+      <p id="today-empty" class="empty hidden">Nada vencendo e nada em aberto. Dia limpo. 🎉</p>
+    </main>
+
+    <!-- Feed -->
+    <main id="tab-feed" class="tab-panel">
+      <div class="toolbar">
+        <input id="search" class="search" placeholder="🔎 Buscar em tudo (o quê, contexto, porquê, participantes…)" />
+        <select id="filter-project" class="filter"></select>
+        <select id="filter-kind" class="filter">
+          <option value="">Tudo</option>
+          <option value="decision">Só decisões</option>
+          <option value="action">Só ações</option>
+          <option value="idea">Só ideias</option>
+        </select>
+      </div>
+      <div id="feed-list" class="feed-list"></div>
+      <p id="feed-empty" class="empty hidden">Nada por aqui ainda. Registre a primeira decisão acima.</p>
+    </main>
+
+    <!-- Ações -->
+    <main id="tab-actions" class="tab-panel hidden">
+      <div id="actions-board" class="actions-board"></div>
+      <p id="actions-empty" class="empty hidden">Nenhuma ação registrada ainda.</p>
+    </main>
+  </div>
+
+  <!-- Modal de decisão -->
+  <div id="decision-modal" class="modal hidden">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" id="decision-modal-body"></div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
