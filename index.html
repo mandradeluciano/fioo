@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fioo — memória de trabalho do time</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Tela de login -->
+  <div id="login-view" class="login-view hidden">
+    <div class="login-card">
+      <h1 class="brand">Fioo</h1>
+      <p class="tagline">Decisões, tarefas e compromissos do time — sem perder o fio.</p>
+
+      <form id="login-form">
+        <input id="login-email" type="email" placeholder="e-mail" autocomplete="email" required />
+        <input id="login-password" type="password" placeholder="senha" autocomplete="current-password" required />
+        <div class="login-actions">
+          <button type="submit" class="btn btn-primary" data-action="signin">Entrar</button>
+          <button type="button" class="btn btn-ghost" data-action="signup">Criar conta</button>
+        </div>
+      </form>
+
+      <div class="login-divider"><span>ou</span></div>
+      <button id="google-btn" class="btn btn-google">Entrar com Google</button>
+
+      <p id="login-error" class="login-error hidden"></p>
+    </div>
+  </div>
+
+  <!-- App -->
+  <div id="app-view" class="app-view hidden">
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="brand-sm">Fioo</span>
+        <nav class="nav">
+          <button class="nav-btn active" data-tab="feed">Feed</button>
+          <button class="nav-btn" data-tab="actions">Ações</button>
+        </nav>
+      </div>
+      <div class="topbar-right">
+        <span id="user-name" class="user-name"></span>
+        <button id="logout-btn" class="btn btn-ghost btn-sm">Sair</button>
+      </div>
+    </header>
+
+    <!-- Caixa de captura -->
+    <section class="capture">
+      <div class="capture-tabs">
+        <button class="capture-tab active" data-cap="decision">Registrar decisão</button>
+        <button class="capture-tab" data-cap="action">Registrar ação</button>
+      </div>
+
+      <!-- Form decisão -->
+      <form id="capture-decision" class="capture-form">
+        <textarea name="title" rows="2" placeholder="O que foi decidido? (cole aqui o trecho da reunião/conversa se quiser)" required></textarea>
+        <div class="capture-grid">
+          <input name="context" placeholder="Contexto / de onde veio (ex.: Reunião comercial 22/07)" />
+          <select name="projectId" class="project-select"></select>
+        </div>
+        <textarea name="rationale" rows="2" placeholder="Por quê? Quais alternativas foram descartadas e por quê"></textarea>
+        <div class="capture-grid">
+          <input name="participants" placeholder="Quem participou (separe por vírgula)" />
+          <input name="decidedAt" type="date" />
+        </div>
+        <div class="capture-footer">
+          <button type="submit" class="btn btn-primary">Salvar decisão</button>
+        </div>
+      </form>
+
+      <!-- Form ação -->
+      <form id="capture-action" class="capture-form hidden">
+        <textarea name="title" rows="2" placeholder="O que precisa ser feito?" required></textarea>
+        <div class="capture-grid">
+          <select name="type" class="type-select">
+            <option value="tarefa">Tarefa</option>
+            <option value="pendencia">Pendência (bloqueada)</option>
+            <option value="followup">Follow-up (cobrar alguém)</option>
+            <option value="compromisso">Compromisso (prometi a alguém)</option>
+          </select>
+          <select name="projectId" class="project-select"></select>
+        </div>
+        <div class="capture-grid">
+          <input name="assignee" placeholder="Responsável / com quem (ex.: cliente X)" />
+          <input name="dueDate" type="date" />
+        </div>
+        <div class="capture-grid">
+          <select name="decisionId" class="decision-select"><option value="">Nasceu de qual decisão? (opcional)</option></select>
+          <select name="status" class="status-select">
+            <option value="aberta">Aberta</option>
+            <option value="em_andamento">Em andamento</option>
+            <option value="bloqueada">Bloqueada</option>
+            <option value="concluida">Concluída</option>
+          </select>
+        </div>
+        <div class="capture-footer">
+          <button type="submit" class="btn btn-primary">Salvar ação</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Feed -->
+    <main id="tab-feed" class="tab-panel">
+      <div class="toolbar">
+        <input id="search" class="search" placeholder="🔎 Buscar em tudo (o quê, contexto, porquê, participantes…)" />
+        <select id="filter-project" class="filter"></select>
+        <select id="filter-kind" class="filter">
+          <option value="">Tudo</option>
+          <option value="decision">Só decisões</option>
+          <option value="action">Só ações</option>
+        </select>
+      </div>
+      <div id="feed-list" class="feed-list"></div>
+      <p id="feed-empty" class="empty hidden">Nada por aqui ainda. Registre a primeira decisão acima.</p>
+    </main>
+
+    <!-- Ações -->
+    <main id="tab-actions" class="tab-panel hidden">
+      <div id="actions-board" class="actions-board"></div>
+      <p id="actions-empty" class="empty hidden">Nenhuma ação registrada ainda.</p>
+    </main>
+  </div>
+
+  <!-- Modal de decisão -->
+  <div id="decision-modal" class="modal hidden">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" id="decision-modal-body"></div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
