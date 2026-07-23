@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Espaço compartilhado do time: qualquer pessoa AUTENTICADA lê e cria.
+    // Só o autor pode editar/apagar o que criou (exceto status de ação, ver abaixo).
+    // Para o MVP, mantemos simples. Endureça conforme crescer.
+
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(res) { return isSignedIn() && request.auth.uid == res.data.createdBy; }
+
+    match /decisions/{id} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.createdBy == request.auth.uid;
+      allow update, delete: if isOwner(resource);
+    }
+
+    match /actions/{id} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.createdBy == request.auth.uid;
+      // Qualquer pessoa autenticada pode mudar o STATUS (ex.: marcar concluída
+      // uma tarefa delegada). Demais campos só o autor.
+      allow update: if isSignedIn() && (
+        isOwner(resource) ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+      );
+      allow delete: if isOwner(resource);
+    }
+
+    match /projects/{id} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.createdBy == request.auth.uid;
+      allow update, delete: if isOwner(resource);
+    }
+  }
+}
